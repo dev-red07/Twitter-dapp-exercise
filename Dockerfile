@@ -1,24 +1,28 @@
-# Stage 1: Build the application
-FROM node:18-alpine AS builder
+# Step 1: Specify the base image
+FROM node:18
 
-# Set working directory
+# Step 2: Set the working directory
 WORKDIR /app
 
+# Step 3: Copy the package.json and yarn.lock files
+COPY package.json yarn.lock ./
 
-# Copy the rest of the application
-COPY . .
+# Step 4: Install Python and build essentials
+RUN apt-get update && \
+    apt-get install -y python3 build-essential && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-
-
-# Install dependencies
+# Step 5: Install dependencies
 RUN yarn install
 
-# Build the Next.js application
-RUN yarn run build
+# Step 6: Copy the rest of your application code
+COPY . .
 
+# Step 7: Build the application
+RUN yarn build
 
-# Expose the port the app runs on
 EXPOSE 3000
 
-# Start the Next.js application
+# Step 8: Specify the command to run the application
 CMD ["yarn", "start"]
