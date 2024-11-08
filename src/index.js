@@ -1,19 +1,31 @@
 import contractABI from "./abi.json";
 
 // 2️⃣ Set your smart contract address 👇
-const contractAddress = "";
+const contractAddress = "0xDfEe7f5dF687F3f1fA28CC6444412BeE5bB8bbD0";
 
 let web3 = new Web3(window.ethereum);
 // 3️⃣ connect to the contract using web3
 // HINT: https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#new-contract
-// let contract = YOUR CODE
+let contract = new web3.eth.Contract(contractABI, contractAddress);
 
 async function connectWallet() {
   if (window.ethereum) {
     // 1️⃣ Request Wallet Connection from Metamask
     // ANSWER can be found here: https://docs.metamask.io/wallet/get-started/set-up-dev-environment/
     // const accounts = YOUR CODE
-
+    const accounts = await window.ethereum
+      .request({ method: "eth_requestAccounts" })
+      .catch((err) => {
+        if (err.code === 4001) {
+          // EIP-1193 userRejectedRequest error.
+          // If this happens, the user rejected the connection request.
+          console.log("Please connect to MetaMask.");
+        } else {
+          console.error(err);
+        }
+      });
+    //const account = accounts[0];
+    console.log(accounts);
     setConnected(accounts[0]);
   } else {
     console.error("No web3 provider detected");
@@ -32,6 +44,7 @@ async function createTweet(content) {
     // 7️⃣ Uncomment the displayTweets function! PRETTY EASY 🔥
     // GOAL: reload tweets after creating a new tweet
     // displayTweets(accounts[0]);
+    await contract.methods.createTweet(content).send({ from: accounts[0] });
   } catch (error) {
     console.error("User rejected request:", error);
   }
