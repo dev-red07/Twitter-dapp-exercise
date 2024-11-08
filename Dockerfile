@@ -22,7 +22,7 @@ COPY . .
 # Step 7: Build the application
 RUN yarn build
 
-EXPOSE 3000
+EXPOSE 1234
 
 # Step 8: Specify the command to run the application
 CMD ["yarn", "start"]
